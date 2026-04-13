@@ -1,0 +1,169 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the application (admin, moderator, or coach).",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "moderator", "coach"],
+          "description": "The user's role."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "teamId": {
+          "type": "string",
+          "description": "The ID of the team this user coaches (if role is coach)."
+        }
+      },
+      "required": ["email", "role"]
+    },
+    "Season": {
+      "title": "Season",
+      "description": "A tournament season.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the season (e.g., '2026 Regionals')."
+        },
+        "year": {
+          "type": "number",
+          "description": "The year of the season."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "completed", "upcoming"],
+          "description": "The current status of the season."
+        }
+      },
+      "required": ["name", "year", "status"]
+    },
+    "Team": {
+      "title": "Team",
+      "description": "A participating team.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the team."
+        },
+        "schoolName": {
+          "type": "string",
+          "description": "The name of the school the team represents."
+        },
+        "coachId": {
+          "type": "string",
+          "description": "The User ID of the team's coach."
+        },
+        "roster": {
+          "type": "array",
+          "description": "List of student names on the team.",
+          "items": { "type": "string" }
+        },
+        "readingProgress": {
+          "type": "object",
+          "description": "Map of book titles to the student assigned to read them.",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "required": ["name", "schoolName"]
+    },
+    "Match": {
+      "title": "Match",
+      "description": "A battle between two teams.",
+      "type": "object",
+      "properties": {
+        "seasonId": {
+          "type": "string",
+          "description": "The ID of the season this match belongs to."
+        },
+        "teamAId": {
+          "type": "string",
+          "description": "Team ID for Team A."
+        },
+        "teamBId": {
+          "type": "string",
+          "description": "Team ID for Team B."
+        },
+        "teamAName": {
+          "type": "string",
+          "description": "Team Name for Team A."
+        },
+        "teamBName": {
+          "type": "string",
+          "description": "Team Name for Team B."
+        },
+        "moderatorId": {
+          "type": "string",
+          "description": "The User ID of the moderator assigned to this match."
+        },
+        "phase": {
+          "type": "string",
+          "enum": ["pool", "bracket"],
+          "description": "The phase of the tournament."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "active", "completed"],
+          "description": "The current status of the match."
+        },
+        "enableSteals": {
+          "type": "boolean",
+          "description": "Whether steals are enabled for this match."
+        },
+        "currentQuestionIndex": {
+          "type": "number",
+          "description": "The index of the current question being asked."
+        },
+        "teamAScore": {
+          "type": "number",
+          "description": "Total score for Team A."
+        },
+        "teamBScore": {
+          "type": "number",
+          "description": "Total score for Team B."
+        },
+        "questions": {
+          "type": "array",
+          "description": "The list of questions and their scores.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "pointsA": { "type": "number" },
+              "pointsB": { "type": "number" }
+            }
+          }
+        }
+      },
+      "required": ["teamAId", "teamBId", "teamAName", "teamBName", "status", "teamAScore", "teamBScore"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and roles."
+    },
+    "/seasons/{seasonId}": {
+      "schema": { "$ref": "#/entities/Season" },
+      "description": "Tournament seasons."
+    },
+    "/teams/{teamId}": {
+      "schema": { "$ref": "#/entities/Team" },
+      "description": "Participating teams."
+    },
+    "/matches/{matchId}": {
+      "schema": { "$ref": "#/entities/Match" },
+      "description": "Tournament matches (battles)."
+    }
+  }
+}
